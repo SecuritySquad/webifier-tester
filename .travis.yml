@@ -1,4 +1,13 @@
+language: java
+jdk:
+- oraclejdk8
+branches:
+  only:
+  - master
+sudo: false
 notifications:
   email: false
   slack:
     secure: jNLfYAaYKE5KLZ1U7snVsTk+xv1F4WGvK7P/0iZ2SOmt3uhskgNbMUN6BiigUlK/iNL3PWo2AU3aI1AbDzYeWM4l9rdIKChqwYedHbCNn/XbhZcWTDOqVvpZUNO0rLjhEKARptJYM+XzOghXvx8rtcVPzU+rUgKvNlhHmWXarNnmvHInnPVR4Hz/K98C4HUtX/FiCP23pFC6b25EBgXobfHbw1eLVQRqJqEW1S7CikgJU38eq1ui8CkF/Emc3r9pTtNwiUhnmCBHS5rHZsXqGPqBo+siTQ+FdnPV5RfVGVMii7nbNQOJBzi5deEB7NTqzpHmkeZ79OFoiyBqDPEv9lnFa4oXjJGFQqJ7r8VLpMFSbsPgSXQoXPXI7BTTQ1lq6MLYpgDF6IZeOppjxhGxJn6rumq1XrjyY043mSW3NOqNP+nLq+4VVMYyj4lHDHZq2TipHF37FouztR87xAJ2vjM4gHuYwJENnUSMoHNLH8ytJdbd+MFht+6UBaQsCGDjXKcSbQOxX/ZDLliD9ne1gtDygqk1P18xsQmuxH42cyeJtzsqb17mJcriGbcWerMP0lM+CIvadTS064wlC7Lb6zbktUIEjT2YmnXGobFzxpkp5bAtFUKUjKzW2qI1m/QV1JW8M1cgDJaMpfWqIifm1H5RWWlD0LLQ5tJXKfmwhuU=
+script:
+- "./gradlew test"

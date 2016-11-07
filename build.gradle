@@ -1,0 +1,51 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+
+sourceSets {
+    main {
+        java {
+            srcDir "src/main/java"
+        }
+        resources {
+            srcDir "src/main/resources"
+        }
+    }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile('org.apache.logging.log4j:log4j-core:2.7')
+    compile('org.apache.commons:commons-lang3:3.4')
+    compile('commons-cli:commons-cli:1.3.1')
+
+    testCompile('junit:junit:4.12')
+}
+
+jar {
+    baseName = 'webifier-tester'
+    version = '0.0.1-SNAPSHOT'
+    manifest {
+        attributes "Main-Class": "de.securitysquad.webifier.WebifierTester"
+    }
+}
+
+task buildAll(type: Jar) {
+    baseName = project.name + "-all"
+    version = project.version
+    manifest {
+        attributes "Main-Class": "de.securitysquad.webifier.WebifierTester"
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
