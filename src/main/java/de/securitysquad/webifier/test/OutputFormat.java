@@ -1,4 +1,4 @@
-package de.securitysquad.webifier;
+package de.securitysquad.webifier.test;
 
 /**
  * Created by samuel on 07.11.16.

@@ -1,0 +1,11 @@
+{
+  "tests": [
+    {
+      "name": "whoami",
+      "script": "whoami"
+    }, {
+      "name": "ls",
+      "script": "ls"
+    }
+  ]
+}

@@ -1,4 +1,6 @@
-package de.securitysquad.webifier;
+package de.securitysquad.webifier.test;
+
+import de.securitysquad.webifier.config.WebifierTestData;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,13 +28,19 @@ public class WebifierTester implements WebifierTestListener {
     }
 
     @Override
-    public void onTestStarted(WebifierTest test, int processId) {
-        output.print("Test " + test.getData().getName() + " started with id " + processId);
+    public void onTestStarted(WebifierTest test) {
+        output.print("Test " + test.getData().getName() + " started!");
     }
 
     @Override
     public void onTestFinished(WebifierTest test, Object result) {
-        output.print("Test " + test.getData().getName() + " finished!");
+        output.print("Test " + test.getData().getName() + " finished! Result:");
+        output.print(result);
         // TODO handle result
+    }
+
+    @Override
+    public void onTestError(WebifierTest test, Exception exception) {
+        output.print("Test " + test.getData().getName() + " finished with error!");
     }
 }
