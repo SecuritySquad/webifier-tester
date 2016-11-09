@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-echo "$1:{\"malicous\":true, \"info\":{}}";
+echo "$1:{\"malicious\":true, \"info\":{}}";
