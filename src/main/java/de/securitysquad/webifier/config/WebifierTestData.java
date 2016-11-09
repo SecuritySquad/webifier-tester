@@ -8,8 +8,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class WebifierTestData {
     @JsonProperty("name")
     private String name;
-    @JsonProperty("script")
-    private String script;
+    @JsonProperty("startup")
+    private String startup;
+    @JsonProperty("shutdown")
+    private String shutdown;
 
     public String getName() {
         return name;
@@ -19,11 +21,19 @@ public class WebifierTestData {
         this.name = name;
     }
 
-    public String getScript() {
-        return script;
+    public String getStartup() {
+        return startup;
     }
 
-    public void setScript(String script) {
-        this.script = script;
+    public void setStartup(String startup) {
+        this.startup = startup;
+    }
+
+    public String getShutdown() {
+        return shutdown;
+    }
+
+    public void setShutdown(String shutdown) {
+        this.shutdown = shutdown;
     }
 }

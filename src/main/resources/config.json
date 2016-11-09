@@ -1,11 +1,10 @@
 {
+  "workingDirectory": "",
   "tests": [
     {
-      "name": "whoami",
-      "script": "whoami"
-    }, {
-      "name": "ls",
-      "script": "ls"
+      "name": "simulator",
+      "startup": "src/main/resources/docker-simulator.sh",
+      "shutdown": ""
     }
   ]
 }
