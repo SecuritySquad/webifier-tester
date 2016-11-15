@@ -1,4 +1,4 @@
-package de.securitysquad.webifier.result;
+package de.securitysquad.webifier.output.result;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,22 +9,11 @@ public class TestResult {
     @JsonProperty("malicious")
     private boolean malicious;
 
-    @JsonProperty("info")
-    private Object info;
-
     public boolean isMalicious() {
         return malicious;
     }
 
     public void setMalicious(boolean malicious) {
         this.malicious = malicious;
-    }
-
-    public Object getInfo() {
-        return info;
-    }
-
-    public void setInfo(Object info) {
-        this.info = info;
     }
 }

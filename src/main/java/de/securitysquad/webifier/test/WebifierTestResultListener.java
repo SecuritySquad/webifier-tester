@@ -5,4 +5,6 @@ package de.securitysquad.webifier.test;
  */
 public interface WebifierTestResultListener {
     void onTestResult(String result);
+
+    void onTestError(String error);
 }

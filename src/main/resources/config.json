@@ -1,10 +1,15 @@
 {
-  "workingDirectory": "",
   "tests": [
     {
       "name": "simulator",
-      "startup": "src/main/resources/docker-simulator.sh",
-      "shutdown": ""
+      "startup": "sh src/main/resources/docker-simulator.sh #ID #URL",
+      "enabled": true
+    },
+    {
+      "name": "VirusScan",
+      "startup": "docker run --rm --net=host -e URL=#URL -e ID=#ID webifier-test-virusscan",
+      "result_class": "de.securitysquad.webifier.output.result.TestVirusScanResult",
+      "enabled": true
     }
   ]
 }

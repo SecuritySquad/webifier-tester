@@ -1,7 +1,11 @@
 package de.securitysquad.webifier.test;
 
 import de.securitysquad.webifier.config.WebifierTestData;
-import de.securitysquad.webifier.result.TestResult;
+import de.securitysquad.webifier.output.message.*;
+import de.securitysquad.webifier.output.message.test.TestFinishedWithError;
+import de.securitysquad.webifier.output.message.test.TestFinishedWithResult;
+import de.securitysquad.webifier.output.message.test.TestStarted;
+import de.securitysquad.webifier.output.result.TestResult;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,29 +27,29 @@ public class WebifierTester implements WebifierTestListener {
         this.suitId = UUID.randomUUID().toString();
         this.url = new URL(url);
         this.output = output;
-        this.tests = testData.stream().map(data -> new WebifierTest(suitId, url, data, this)).collect(toList());
+        this.tests = testData.stream().filter(WebifierTestData::isEnabled).map(data -> new WebifierTest(suitId, url, data, this)).collect(toList());
     }
 
     public void launch() {
-        output.print("Starting tests for " + url);
+        output.print(new TesterStart(suitId, url));
         tests.forEach(WebifierTest::launch);
     }
 
     @Override
     public void onTestStarted(WebifierTest test) {
-        output.print("Test " + test.getData().getName() + " started!");
+        output.print(new TestStarted(suitId, test.getId(), test.getData().getName()));
     }
 
     @Override
     public void onTestFinished(WebifierTest test, TestResult result) {
-        output.print("Test " + test.getData().getName() + " finished! Result:");
-        output.print(result);
-        // TODO handle result
+        output.print(new TestFinishedWithResult(suitId, test.getId(), test.getData().getName(), result));
+        if (tests.stream().allMatch(WebifierTest::isFinished)) {
+            output.print(new TesterFinished(suitId, url, tests.stream().anyMatch(t -> t.getResult().isMalicious())));
+        }
     }
 
     @Override
     public void onTestError(WebifierTest test, Exception exception) {
-        output.print("Test " + test.getData().getName() + " finished with error!");
-        exception.printStackTrace();
+        output.print(new TestFinishedWithError(suitId, test.getId(), test.getData().getName(), exception));
     }
 }

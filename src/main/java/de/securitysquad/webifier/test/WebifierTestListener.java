@@ -1,6 +1,6 @@
 package de.securitysquad.webifier.test;
 
-import de.securitysquad.webifier.result.TestResult;
+import de.securitysquad.webifier.output.result.TestResult;
 
 /**
  * Created by samuel on 07.11.16.

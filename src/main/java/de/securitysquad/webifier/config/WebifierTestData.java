@@ -12,6 +12,10 @@ public class WebifierTestData {
     private String startup;
     @JsonProperty("shutdown")
     private String shutdown;
+    @JsonProperty("enabled")
+    private boolean enabled;
+    @JsonProperty("result_class")
+    private String resultClass;
 
     public String getName() {
         return name;
@@ -35,5 +39,21 @@ public class WebifierTestData {
 
     public void setShutdown(String shutdown) {
         this.shutdown = shutdown;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getResultClass() {
+        return resultClass;
+    }
+
+    public void setResultClass(String resultClass) {
+        this.resultClass = resultClass;
     }
 }

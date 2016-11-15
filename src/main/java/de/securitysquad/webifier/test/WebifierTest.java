@@ -2,25 +2,25 @@ package de.securitysquad.webifier.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.securitysquad.webifier.config.WebifierTestData;
-import de.securitysquad.webifier.result.TestResult;
-import org.apache.commons.exec.*;
+import de.securitysquad.webifier.output.result.TestResult;
 import org.apache.logging.log4j.util.Strings;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by samuel on 07.11.16.
  */
-public class WebifierTest implements ExecuteResultHandler, WebifierTestResultListener {
-    private final String testId;
+public class WebifierTest implements WebifierTestResultListener {
+    private final String id;
     private final String url;
     private final WebifierTestData data;
     private final WebifierTestListener listener;
     private TestResult result;
 
     public WebifierTest(String suitId, String url, WebifierTestData data, WebifierTestListener listener) {
-        this.testId = suitId + "_" + UUID.randomUUID().toString();
+        this.id = suitId + "_" + UUID.randomUUID().toString();
         this.url = url;
         this.data = data;
         this.listener = listener;
@@ -30,67 +30,89 @@ public class WebifierTest implements ExecuteResultHandler, WebifierTestResultLis
         return data;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public boolean isFinished() {
+        return result != null;
+    }
+
+    public TestResult getResult() {
+        return result;
+    }
+
     public void launch() {
-        try {
-            CommandLine commandLine = createCommandLine(data.getStartup());
-            DefaultExecutor executor = createExecutor();
-            executor.setStreamHandler(new WebifierTestStreamHandler(testId + ": ", this));
-            executor.execute(commandLine, this);
-            listener.onTestStarted(this);
-        } catch (IOException e) {
-            listener.onTestError(this, e);
-        }
+        new Thread(() -> {
+            WebifierTestStreamHandler streamHandler = new WebifierTestStreamHandler(id + ": ", this);
+            Process process = null;
+            try {
+                String command = data.getStartup().replace("#URL", url).replace("#ID", id);
+                process = Runtime.getRuntime().exec(command);
+                streamHandler.setProcessOutputStream(process.getInputStream());
+                streamHandler.setProcessErrorStream(process.getErrorStream());
+                streamHandler.start();
+                listener.onTestStarted(this);
+                process.waitFor(5, TimeUnit.MINUTES);
+            } catch (IOException | InterruptedException e) {
+                listener.onTestError(this, e);
+            } finally {
+                if (process != null) {
+                    process.destroy();
+                }
+                try {
+                    streamHandler.stop();
+                } catch (IOException e) {
+                    listener.onTestError(this, e);
+                }
+            }
+        }).start();
     }
 
     private void shutdown() {
         if (Strings.isEmpty(data.getShutdown())) {
             return;
         }
-        try {
-            CommandLine commandLine = createCommandLine(data.getShutdown());
-            DefaultExecutor executor = createExecutor();
-            executor.execute(commandLine);
-            listener.onTestStarted(this);
-        } catch (IOException e) {
-            listener.onTestError(this, e);
-        }
-    }
-
-    private DefaultExecutor createExecutor() {
-        DefaultExecutor executor = new DefaultExecutor();
-        executor.setExitValue(0);
-        executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
-        executor.setWatchdog(new ExecuteWatchdog(1000));
-        return executor;
-    }
-
-    private CommandLine createCommandLine(String shutdown) {
-        CommandLine commandLine = new CommandLine(shutdown);
-        commandLine.addArgument(testId);
-        commandLine.addArgument(url);
-        return commandLine;
+        new Thread(() -> {
+            Process process = null;
+            try {
+                String command = data.getShutdown().replace("#URL", url).replace("#ID", id);
+                process = Runtime.getRuntime().exec(command);
+                process.waitFor(1, TimeUnit.MINUTES);
+            } catch (IOException | InterruptedException e) {
+                listener.onTestError(WebifierTest.this, e);
+            } finally {
+                if (process != null) {
+                    process.destroy();
+                }
+            }
+        }).start();
     }
 
     @Override
     public void onTestResult(String result) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            this.result = mapper.readValue(result, TestResult.class);
+            this.result = mapper.readValue(result, getSpecificClass());
         } catch (IOException e) {
             listener.onTestError(this, e);
         }
         shutdown();
+        if (result != null) {
+            listener.onTestFinished(WebifierTest.this, this.result);
+        }
     }
 
-    @Override
-    public void onProcessComplete(int exitValue) {
-        if (result != null) {
-            listener.onTestFinished(WebifierTest.this, result);
+    private Class<? extends TestResult> getSpecificClass() {
+        try {
+            return (Class<? extends TestResult>) Class.forName(data.getResultClass());
+        } catch (Exception e) {
+            return TestResult.class;
         }
     }
 
     @Override
-    public void onProcessFailed(ExecuteException e) {
-        listener.onTestError(WebifierTest.this, e);
+    public void onTestError(String error) {
+        listener.onTestError(this, new Exception(error));
     }
 }

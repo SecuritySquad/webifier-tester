@@ -1,35 +1,18 @@
 package de.securitysquad.webifier.test;
 
+import de.securitysquad.webifier.output.message.Message;
+
 /**
  * Created by samuel on 07.11.16.
  */
 public enum OutputFormat {
-    CMD {
-        @Override
-        public String format(Object output) {
-            // TODO customize
-            return String.valueOf(output);
-        }
-    }, JSON {
-        @Override
-        public String format(Object output) {
-            // TODO customize
-            return String.valueOf(output) + "\nOutputFormat is JSON.";
-        }
-    }, XML {
-        @Override
-        public String format(Object output) {
-            // TODO customize
-            return String.valueOf(output) + "\nOutputFormat is XML.";
-        }
-    };
+    CMD, JSON, XML;
 
-    // TODO create Object for output
-    public abstract String format(Object output);
-
-    // TODO create Object for output
-    public void print(Object output) {
-        System.out.println(format(output));
+    public void print(Message message) {
+        if (message == null) {
+            throw new NullPointerException("message must not be null!");
+        }
+        System.out.println(message.formatMessage(this));
     }
 
     public static OutputFormat valueOfOrDefault(String name) {

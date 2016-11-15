@@ -1,28 +1,22 @@
 package de.securitysquad.webifier.test;
 
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.ExecuteStreamHandler;
-import org.apache.commons.exec.Executor;
-import org.apache.commons.exec.util.DebugUtils;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * Created by samuel on 09.11.16.
  */
-public class WebifierTestStreamHandler implements ExecuteStreamHandler, Runnable {
-
+public class WebifierTestStreamHandler implements Runnable {
     private static final long STOP_TIMEOUT_ADDITION = 2000L;
 
     private Thread outputThread;
-
     private BufferedReader outputReader;
 
     /**
      * the last exception being caught
      */
-    private IOException caught;
-
     private String prefix;
     private WebifierTestResultListener listener;
 
@@ -32,38 +26,23 @@ public class WebifierTestStreamHandler implements ExecuteStreamHandler, Runnable
     }
 
 
-    @Override
-    public void setProcessInputStream(OutputStream os) throws IOException {
-        // not needed
-    }
-
-    @Override
     public void setProcessErrorStream(InputStream is) throws IOException {
-        // not needed
     }
 
-    @Override
     public void setProcessOutputStream(InputStream is) throws IOException {
         this.outputReader = new BufferedReader(new InputStreamReader(is));
-        final Thread result = new Thread(this, "Exec Webifier Stream Pumper");
-        result.setDaemon(true);
-        outputThread = result;
+        outputThread = new Thread(this, "Exec Webifier Stream Pumper");
+        outputThread.setDaemon(true);
     }
 
-    @Override
     public void start() throws IOException {
         if (outputThread != null) {
             outputThread.start();
         }
     }
 
-    @Override
     public void stop() throws IOException {
         stopThread(outputThread, STOP_TIMEOUT_ADDITION);
-
-        if (caught != null) {
-            throw caught;
-        }
     }
 
     private void stopThread(final Thread thread, final long timeout) {
@@ -73,12 +52,7 @@ public class WebifierTestStreamHandler implements ExecuteStreamHandler, Runnable
                     thread.join();
                 } else {
                     final long timeToWait = timeout + STOP_TIMEOUT_ADDITION;
-                    final long startTime = System.currentTimeMillis();
                     thread.join(timeToWait);
-                    if (!(System.currentTimeMillis() < startTime + timeToWait)) {
-                        final String msg = "The stop timeout of " + timeout + " ms was exceeded";
-                        caught = new ExecuteException(msg, Executor.INVALID_EXITVALUE);
-                    }
                 }
             } catch (final InterruptedException e) {
                 thread.interrupt();
@@ -103,8 +77,7 @@ public class WebifierTestStreamHandler implements ExecuteStreamHandler, Runnable
             try {
                 outputReader.close();
             } catch (final IOException e) {
-                final String msg = "Got exception while closing output stream";
-                DebugUtils.handleException(msg, e);
+                // nothing to do
             }
         }
     }
