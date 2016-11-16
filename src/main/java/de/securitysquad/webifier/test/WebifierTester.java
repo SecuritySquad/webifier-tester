@@ -1,7 +1,8 @@
 package de.securitysquad.webifier.test;
 
 import de.securitysquad.webifier.config.WebifierTestData;
-import de.securitysquad.webifier.output.message.*;
+import de.securitysquad.webifier.output.message.TesterFinished;
+import de.securitysquad.webifier.output.message.TesterStart;
 import de.securitysquad.webifier.output.message.test.TestFinishedWithError;
 import de.securitysquad.webifier.output.message.test.TestFinishedWithResult;
 import de.securitysquad.webifier.output.message.test.TestStarted;
@@ -10,7 +11,6 @@ import de.securitysquad.webifier.output.result.TestResult;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 
@@ -23,8 +23,8 @@ public class WebifierTester implements WebifierTestListener {
     private final OutputFormat output;
     private final List<WebifierTest> tests;
 
-    public WebifierTester(String url, OutputFormat output, List<WebifierTestData> testData) throws MalformedURLException {
-        this.suitId = UUID.randomUUID().toString();
+    public WebifierTester(String url, String id, OutputFormat output, List<WebifierTestData> testData) throws MalformedURLException {
+        this.suitId = id;
         this.url = new URL(url);
         this.output = output;
         this.tests = testData.stream().filter(WebifierTestData::isEnabled).map(data -> new WebifierTest(suitId, url, data, this)).collect(toList());

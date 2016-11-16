@@ -39,15 +39,15 @@ jar {
     baseName = 'webifier-tester'
     version = '0.0.1-SNAPSHOT'
     manifest {
-        attributes "Main-Class": "de.securitysquad.webifier.WebifierTester"
+        attributes "Main-Class": "de.securitysquad.webifier.WebifierTesterApplication"
     }
 }
 
 task buildAll(type: Jar) {
-    baseName = project.name + "-all"
-    version = project.version
+    baseName = 'webifier-tester-all'
+    version = '0.0.1-SNAPSHOT'
     manifest {
-        attributes "Main-Class": "de.securitysquad.webifier.WebifierTester"
+        attributes "Main-Class": "de.securitysquad.webifier.WebifierTesterApplication"
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar

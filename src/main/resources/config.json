@@ -3,7 +3,7 @@
     {
       "name": "simulator",
       "startup": "sh src/main/resources/docker-simulator.sh #ID #URL",
-      "enabled": true
+      "enabled": false
     },
     {
       "name": "VirusScan",
