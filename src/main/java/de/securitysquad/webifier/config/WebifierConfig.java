@@ -8,11 +8,13 @@ import java.util.List;
  * Created by samuel on 08.11.16.
  */
 public class WebifierConfig {
+    @JsonProperty("resolver")
+    private WebifierTestData resolver;
     @JsonProperty("tests")
     private List<WebifierTestData> tests;
 
-    public void setTests(List<WebifierTestData> tests) {
-        this.tests = tests;
+    public WebifierTestData getResolver() {
+        return resolver;
     }
 
     public List<WebifierTestData> getTests() {

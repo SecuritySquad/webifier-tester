@@ -15,15 +15,7 @@ public class VirusScanResultFile {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public boolean isMalicious() {
         return malicious;
-    }
-
-    public void setMalicious(boolean malicious) {
-        this.malicious = malicious;
     }
 }

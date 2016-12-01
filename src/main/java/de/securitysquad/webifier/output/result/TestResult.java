@@ -12,8 +12,4 @@ public class TestResult {
     public boolean isMalicious() {
         return malicious;
     }
-
-    public void setMalicious(boolean malicious) {
-        this.malicious = malicious;
-    }
 }

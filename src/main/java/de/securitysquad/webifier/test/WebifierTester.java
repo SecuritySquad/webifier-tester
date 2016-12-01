@@ -8,8 +8,6 @@ import de.securitysquad.webifier.output.message.test.TestFinishedWithResult;
 import de.securitysquad.webifier.output.message.test.TestStarted;
 import de.securitysquad.webifier.output.result.TestResult;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -17,17 +15,17 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by samuel on 07.11.16.
  */
-public class WebifierTester implements WebifierTestListener {
+public class WebifierTester implements WebifierTestListener<TestResult> {
     private final String suitId;
-    private final URL url;
+    private final String url;
     private final OutputFormat output;
-    private final List<WebifierTest> tests;
+    private final List<WebifierTest<TestResult>> tests;
 
-    public WebifierTester(String url, String id, OutputFormat output, List<WebifierTestData> testData) throws MalformedURLException {
+    public WebifierTester(String id, String url, OutputFormat output, List<WebifierTestData> testData) {
         this.suitId = id;
-        this.url = new URL(url);
+        this.url = url;
         this.output = output;
-        this.tests = testData.stream().filter(WebifierTestData::isEnabled).map(data -> new WebifierTest(suitId, url, data, this)).collect(toList());
+        this.tests = testData.stream().filter(WebifierTestData::isEnabled).map(data -> new WebifierTest<>(suitId, url, data, this)).collect(toList());
     }
 
     public void launch() {
@@ -51,5 +49,10 @@ public class WebifierTester implements WebifierTestListener {
     @Override
     public void onTestError(WebifierTest test, Exception exception) {
         output.print(new TestFinishedWithError(suitId, test.getId(), test.getData().getName(), exception));
+    }
+
+    @Override
+    public Class<TestResult> getResultClass() {
+        return TestResult.class;
     }
 }

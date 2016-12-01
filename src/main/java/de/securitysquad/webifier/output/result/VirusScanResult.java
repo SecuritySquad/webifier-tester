@@ -24,23 +24,11 @@ public class VirusScanResult {
         return scannedFiles;
     }
 
-    public void setScannedFiles(int scannedFiles) {
-        this.scannedFiles = scannedFiles;
-    }
-
     public int getMaliciousFiles() {
         return maliciousFiles;
     }
 
-    public void setMaliciousFiles(int maliciousFiles) {
-        this.maliciousFiles = maliciousFiles;
-    }
-
     public List<VirusScanResultFile> getFiles() {
         return files;
-    }
-
-    public void setFiles(List<VirusScanResultFile> files) {
-        this.files = files;
     }
 }

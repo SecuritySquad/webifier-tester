@@ -1,13 +1,14 @@
 {
+  "resolver": {
+    "name": "resolver",
+    "startup": "docker run --rm --net=host -e URL=#URL -e ID=#ID webifier-resolver",
+    "startup_timeout_seconds": 60
+  },
   "tests": [
-    {
-      "name": "simulator",
-      "startup": "sh src/main/resources/docker-simulator.sh #ID #URL",
-      "enabled": false
-    },
     {
       "name": "VirusScan",
       "startup": "docker run --rm --net=host -e URL=#URL -e ID=#ID webifier-test-virusscan",
+      "startup_timeout_seconds": 600,
       "result_class": "de.securitysquad.webifier.output.result.TestVirusScanResult",
       "enabled": true
     }

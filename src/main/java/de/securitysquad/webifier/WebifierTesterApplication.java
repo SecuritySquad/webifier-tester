@@ -2,6 +2,8 @@ package de.securitysquad.webifier;
 
 import de.securitysquad.webifier.config.WebifierConfig;
 import de.securitysquad.webifier.config.WebifierConfigLoader;
+import de.securitysquad.webifier.launch.WebifierResolver;
+import de.securitysquad.webifier.output.result.ResolverResult;
 import de.securitysquad.webifier.test.OutputFormat;
 import de.securitysquad.webifier.test.WebifierTester;
 import org.apache.commons.cli.*;
@@ -21,10 +23,6 @@ public class WebifierTesterApplication {
     private static final String OUTPUT = "o";
     private static final String ID = "i";
 
-    public static void main(String[] args) {
-        new WebifierTesterApplication(args);
-    }
-
     private WebifierTesterApplication(String... args) {
         Options options = new Options();
         options.addOption(builder(HELP).longOpt("help").desc("Print this help screen.").build());
@@ -39,13 +37,13 @@ public class WebifierTesterApplication {
                 return;
             }
             launchTester(cmd);
-        } catch (ParseException | IOException e) {
+        } catch (ParseException | IOException | InterruptedException e) {
             System.out.println("An error occurred: " + e.getMessage());
             printHelp(options);
         }
     }
 
-    private void launchTester(CommandLine cmd) throws IOException {
+    private void launchTester(CommandLine cmd) throws IOException, InterruptedException {
         String id = UUID.randomUUID().toString();
         if (cmd.hasOption(ID)) {
             id = cmd.getOptionValue(ID);
@@ -54,12 +52,21 @@ public class WebifierTesterApplication {
         if (cmd.hasOption(OUTPUT)) {
             outputFormat = valueOfOrDefault(cmd.getOptionValue(OUTPUT));
         }
-        WebifierConfigLoader loader = new WebifierConfigLoader();
-        WebifierConfig config = loader.load(ClassLoader.getSystemResourceAsStream("config.json"));
-        new WebifierTester(cmd.getOptionValue(URL), id, outputFormat, config.getTests()).launch();
+        String url = cmd.getOptionValue(URL);
+        WebifierConfig config = new WebifierConfigLoader().load(ClassLoader.getSystemResourceAsStream("config.json"));
+        WebifierResolver resolver = new WebifierResolver(id, url, outputFormat, config.getResolver());
+        resolver.launch();
+        ResolverResult result = resolver.waitForResult();
+        if (result.isReachable()) {
+            new WebifierTester(id, result.getResolvedUrl(), outputFormat, config.getTests()).launch();
+        }
     }
 
     private void printHelp(Options options) {
         new HelpFormatter().printHelp("java -jar webifier-tester.jar", options);
+    }
+
+    public static void main(String[] args) {
+        new WebifierTesterApplication(args);
     }
 }

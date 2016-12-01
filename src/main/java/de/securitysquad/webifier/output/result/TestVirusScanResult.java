@@ -12,8 +12,4 @@ public class TestVirusScanResult extends TestResult {
     public VirusScanResult getInfo() {
         return info;
     }
-
-    public void setInfo(VirusScanResult info) {
-        this.info = info;
-    }
 }

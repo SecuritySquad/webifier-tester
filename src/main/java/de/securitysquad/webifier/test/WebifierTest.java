@@ -2,7 +2,6 @@ package de.securitysquad.webifier.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.securitysquad.webifier.config.WebifierTestData;
-import de.securitysquad.webifier.output.result.TestResult;
 import org.apache.logging.log4j.util.Strings;
 
 import java.io.IOException;
@@ -12,14 +11,16 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by samuel on 07.11.16.
  */
-public class WebifierTest implements WebifierTestResultListener {
+public class WebifierTest<R> implements WebifierTestResultListener {
     private final String id;
     private final String url;
     private final WebifierTestData data;
-    private final WebifierTestListener listener;
-    private TestResult result;
+    private final WebifierTestListener<R> listener;
+    private boolean finished;
+    private R result;
+    private Exception error;
 
-    public WebifierTest(String suitId, String url, WebifierTestData data, WebifierTestListener listener) {
+    public WebifierTest(String suitId, String url, WebifierTestData data, WebifierTestListener<R> listener) {
         this.id = suitId + "_" + UUID.randomUUID().toString();
         this.url = url;
         this.data = data;
@@ -35,10 +36,10 @@ public class WebifierTest implements WebifierTestResultListener {
     }
 
     public boolean isFinished() {
-        return result != null;
+        return finished;
     }
 
-    public TestResult getResult() {
+    public R getResult() {
         return result;
     }
 
@@ -53,7 +54,7 @@ public class WebifierTest implements WebifierTestResultListener {
                 streamHandler.setProcessErrorStream(process.getErrorStream());
                 streamHandler.start();
                 listener.onTestStarted(this);
-                process.waitFor(5, TimeUnit.MINUTES);
+                process.waitFor(data.getStartupTimeoutInSeconds(), TimeUnit.SECONDS);
             } catch (IOException | InterruptedException e) {
                 listener.onTestError(this, e);
             } finally {
@@ -64,6 +65,9 @@ public class WebifierTest implements WebifierTestResultListener {
                     streamHandler.stop();
                 } catch (IOException e) {
                     listener.onTestError(this, e);
+                }
+                if (!finished) {
+                    onTestError("no result received!");
                 }
             }
         }).start();
@@ -78,7 +82,7 @@ public class WebifierTest implements WebifierTestResultListener {
             try {
                 String command = data.getShutdown().replace("#URL", url).replace("#ID", id);
                 process = Runtime.getRuntime().exec(command);
-                process.waitFor(1, TimeUnit.MINUTES);
+                process.waitFor(data.getShutdownTimeoutInSeconds(), TimeUnit.SECONDS);
             } catch (IOException | InterruptedException e) {
                 listener.onTestError(WebifierTest.this, e);
             } finally {
@@ -101,18 +105,22 @@ public class WebifierTest implements WebifierTestResultListener {
         if (result != null) {
             listener.onTestFinished(WebifierTest.this, this.result);
         }
+        finished = true;
     }
 
-    private Class<? extends TestResult> getSpecificClass() {
+    private Class<R> getSpecificClass() {
         try {
-            return (Class<? extends TestResult>) Class.forName(data.getResultClass());
+            return (Class<R>) Class.forName(data.getResultClass());
         } catch (Exception e) {
-            return TestResult.class;
+            return listener.getResultClass();
         }
     }
 
     @Override
     public void onTestError(String error) {
-        listener.onTestError(this, new Exception(error));
+        shutdown();
+        this.error = new Exception(error);
+        listener.onTestError(this, this.error);
+        finished = true;
     }
 }
