@@ -39,6 +39,10 @@ public class WebifierTest<R> implements WebifierTestResultListener {
         return finished;
     }
 
+    public boolean isCompleted() {
+        return result != null || error != null;
+    }
+
     public R getResult() {
         return result;
     }

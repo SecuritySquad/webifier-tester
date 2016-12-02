@@ -41,7 +41,7 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     @Override
     public void onTestFinished(WebifierTest test, TestResult result) {
         output.print(new TestFinishedWithResult(suitId, test.getId(), test.getData().getName(), result));
-        if (tests.stream().allMatch(WebifierTest::isFinished)) {
+        if (tests.stream().allMatch(WebifierTest::isCompleted)) {
             output.print(new TesterFinished(suitId, url, tests.stream().anyMatch(t -> t.getResult().isMalicious())));
         }
     }
