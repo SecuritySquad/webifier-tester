@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 install() {
+    rm -rf $1
     git clone https://github.com/SecuritySquad/$1.git
     cd $1
     sh install.sh
@@ -10,6 +11,8 @@ install() {
 cd ..
 
 docker rmi $(docker images -q)
+
+rm -rf run
 
 install webifier-resolver
 
