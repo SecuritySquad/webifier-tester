@@ -9,6 +9,8 @@ install() {
 
 cd ..
 
+docker rmi $(docker images -q)
+
 install webifier-resolver
 
 install webifier-test-virusscan
