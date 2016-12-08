@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class TestVirusScanResult extends TestResult {
     @JsonProperty("info")
-    private VirusScanResult info;
+    private TestVirusScanResultInfo info;
 
-    public VirusScanResult getInfo() {
+    public TestVirusScanResultInfo getInfo() {
         return info;
     }
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Created by samuel on 15.11.16.
  */
-public class VirusScanResultFile {
+public class TestVirusScanResultFile {
     @JsonProperty("name")
     private String name;
     @JsonProperty("malicious")

@@ -8,15 +8,15 @@ import java.util.List;
 /**
  * Created by samuel on 15.11.16.
  */
-public class VirusScanResult {
+public class TestVirusScanResultInfo {
     @JsonProperty("scanned_files")
     private int scannedFiles;
     @JsonProperty("malicious_files")
     private int maliciousFiles;
     @JsonProperty("files")
-    private List<VirusScanResultFile> files;
+    private List<TestVirusScanResultFile> files;
 
-    public VirusScanResult() {
+    public TestVirusScanResultInfo() {
         files = new ArrayList<>();
     }
 
@@ -28,7 +28,7 @@ public class VirusScanResult {
         return maliciousFiles;
     }
 
-    public List<VirusScanResultFile> getFiles() {
+    public List<TestVirusScanResultFile> getFiles() {
         return files;
     }
 }
