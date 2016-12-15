@@ -18,6 +18,8 @@ install webifier-resolver
 
 install webifier-test-virusscan
 
+install webifier-test-header-inspection
+
 cd webifier-tester
 ./gradlew :buildAll
 cd ..
