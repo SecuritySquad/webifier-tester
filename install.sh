@@ -20,6 +20,8 @@ install webifier-test-virusscan
 
 install webifier-test-header-inspection
 
+install webifier-test-portscan
+
 cd webifier-tester
 ./gradlew :buildAll
 cd ..
