@@ -16,7 +16,7 @@ public class TestErrorMessage extends ErrorMessage {
     private String test_name;
 
     public TestErrorMessage(String testerId, String testId, String testName, Exception exception) {
-        super(testerId, exception);
+        super(testerId, "An error occurred in Test " + testName+ "!", exception);
         this.test_id = testId;
         this.test_name = testName;
     }

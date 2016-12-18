@@ -1,27 +1,27 @@
 {
   "resolver": {
     "name": "resolver",
-    "startup": "docker run --rm --net=host -e URL=#URL -e ID=#ID webifier-resolver",
+    "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-resolver",
     "startup_timeout_seconds": 60
   },
   "tests": [
     {
       "name": "VirusScan",
-      "startup": "docker run --rm --net=host -e URL=#URL -e ID=#ID webifier-test-virusscan",
+      "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-virusscan",
       "startup_timeout_seconds": 600,
       "result_class": "de.securitysquad.webifier.output.result.TestVirusScanResult",
       "enabled": true
     },
     {
       "name": "HeaderInspection",
-      "startup": "docker run --rm --net=host -e URL=#URL -e ID=#ID webifier-test-header-inspection",
+      "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-header-inspection",
       "startup_timeout_seconds": 600,
       "result_class": "de.securitysquad.webifier.output.result.headerinspection.HeaderInspectionResult",
-      "enabled": true
+      "enabled": false
     },
     {
       "name": "PortScan",
-      "startup": "docker run --rm --net=host -e URL=#URL -e ID=#ID webifier-test-portscan",
+      "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-portscan",
       "startup_timeout_seconds": 600,
       "result_class": "de.securitysquad.webifier.output.result.TestPortScanResult",
       "enabled": true
