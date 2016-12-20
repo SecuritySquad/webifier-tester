@@ -17,7 +17,7 @@
       "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-header-inspection",
       "startup_timeout_seconds": 600,
       "result_class": "de.securitysquad.webifier.output.result.headerinspection.HeaderInspectionResult",
-      "enabled": false
+      "enabled": true
     },
     {
       "name": "PortScan",
