@@ -4,6 +4,7 @@
 *.jar
 *.war
 *.ear
+/classes
 hs_err_pid*
 
 ## IntelliJ project settings
