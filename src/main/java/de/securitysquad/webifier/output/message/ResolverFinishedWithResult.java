@@ -3,7 +3,7 @@ package de.securitysquad.webifier.output.message;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import de.securitysquad.webifier.output.message.test.TestMessage;
-import de.securitysquad.webifier.output.result.portscan.ResolverResult;
+import de.securitysquad.webifier.output.result.ResolverResult;
 
 /**
  * Created by samuel on 01.12.16.

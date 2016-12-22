@@ -5,7 +5,7 @@ import de.securitysquad.webifier.output.result.TestResultInfo;
 
 import java.util.List;
 
-public class HeaderInspectionResultInfo {
+public class HeaderInspectionResultInfo extends TestResultInfo {
     @JsonProperty("meanRatio")
     private double meanRatio;
 

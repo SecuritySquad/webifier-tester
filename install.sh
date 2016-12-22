@@ -10,8 +10,6 @@ install() {
 
 cd ..
 
-docker rmi $(docker images -q)
-
 rm -rf run
 
 install webifier-resolver
@@ -21,6 +19,8 @@ install webifier-test-virusscan
 install webifier-test-header-inspection
 
 install webifier-test-portscan
+
+docker rmi $(docker images --filter "dangling=true" -q)
 
 cd webifier-tester
 ./gradlew :buildAll

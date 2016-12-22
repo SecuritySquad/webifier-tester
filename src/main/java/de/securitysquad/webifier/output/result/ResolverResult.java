@@ -1,4 +1,4 @@
-package de.securitysquad.webifier.output.result.portscan;
+package de.securitysquad.webifier.output.result;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

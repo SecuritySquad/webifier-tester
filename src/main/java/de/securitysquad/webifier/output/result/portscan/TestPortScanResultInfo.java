@@ -1,11 +1,12 @@
 package de.securitysquad.webifier.output.result.portscan;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.securitysquad.webifier.output.result.TestResultInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestPortScanResultInfo {
+public class TestPortScanResultInfo extends TestResultInfo {
 
     @JsonProperty("unknown_ports")
     private List<Integer> unknown_ports;

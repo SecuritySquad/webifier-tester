@@ -3,7 +3,7 @@ package de.securitysquad.webifier;
 import de.securitysquad.webifier.config.WebifierConfig;
 import de.securitysquad.webifier.config.WebifierConfigLoader;
 import de.securitysquad.webifier.launch.WebifierResolver;
-import de.securitysquad.webifier.output.result.portscan.ResolverResult;
+import de.securitysquad.webifier.output.result.ResolverResult;
 import de.securitysquad.webifier.test.OutputFormat;
 import de.securitysquad.webifier.test.WebifierTester;
 import org.apache.commons.cli.*;

@@ -1,6 +1,7 @@
 package de.securitysquad.webifier.output.result.virusscan;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.securitysquad.webifier.output.result.TestResultInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 /**
  * Created by samuel on 15.11.16.
  */
-public class TestVirusScanResultInfo {
+public class TestVirusScanResultInfo extends TestResultInfo {
     @JsonProperty("scanned_files")
     private int scannedFiles;
     @JsonProperty("malicious_files")

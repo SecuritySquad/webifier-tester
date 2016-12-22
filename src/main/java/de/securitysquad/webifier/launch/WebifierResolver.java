@@ -4,7 +4,7 @@ import de.securitysquad.webifier.config.WebifierTestData;
 import de.securitysquad.webifier.output.message.ResolverFinishedWithError;
 import de.securitysquad.webifier.output.message.ResolverFinishedWithResult;
 import de.securitysquad.webifier.output.message.ResolverStarted;
-import de.securitysquad.webifier.output.result.portscan.ResolverResult;
+import de.securitysquad.webifier.output.result.ResolverResult;
 import de.securitysquad.webifier.test.OutputFormat;
 import de.securitysquad.webifier.test.WebifierTest;
 import de.securitysquad.webifier.test.WebifierTestListener;

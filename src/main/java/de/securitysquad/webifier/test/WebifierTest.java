@@ -1,7 +1,10 @@
 package de.securitysquad.webifier.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.securitysquad.webifier.config.WebifierTestData;
+import de.securitysquad.webifier.output.result.TestResult;
+import de.securitysquad.webifier.output.result.TestResultInfo;
 import org.apache.logging.log4j.util.Strings;
 
 import java.io.IOException;
@@ -101,8 +104,14 @@ public class WebifierTest<R> implements WebifierTestResultListener {
     public void onTestResult(String result) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            this.result = mapper.readValue(result, getSpecificClass());
-        } catch (IOException e) {
+            if (TestResult.class.isAssignableFrom(listener.getResultClass())) {
+                SimpleModule module = new SimpleModule();
+                module.addAbstractTypeMapping(TestResultInfo.class, getSpecificClass());
+                mapper.registerModule(module);
+            }
+            this.result = mapper.readValue(result, listener.getResultClass());
+        } catch (Exception e) {
+            e.printStackTrace();
             listener.onTestError(this, e);
         }
         shutdown();
@@ -112,12 +121,8 @@ public class WebifierTest<R> implements WebifierTestResultListener {
         finished = true;
     }
 
-    private Class<R> getSpecificClass() {
-        try {
-            return (Class<R>) Class.forName(data.getResultClass());
-        } catch (Exception e) {
-            return listener.getResultClass();
-        }
+    private Class<? extends TestResultInfo> getSpecificClass() throws ClassNotFoundException {
+        return (Class<? extends TestResultInfo>) Class.forName(data.getResultClass());
     }
 
     @Override

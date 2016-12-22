@@ -3,9 +3,8 @@ package de.securitysquad.webifier.output.message.test;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import de.securitysquad.webifier.output.result.TestResult;
-import de.securitysquad.webifier.output.result.virusscan.TestVirusScanResult;
-import de.securitysquad.webifier.output.result.virusscan.TestVirusScanResultInfo;
 import de.securitysquad.webifier.output.result.WebifierResultType;
+import de.securitysquad.webifier.output.result.virusscan.TestVirusScanResultInfo;
 
 /**
  * Created by samuel on 09.11.16.
@@ -23,8 +22,8 @@ public class TestFinishedWithResult extends TestMessage {
     @Override
     public String formatCmd() {
         String basic = super.formatCmd() + " Result: \n" + getResultMessage(result.getResultType());
-        if (result instanceof TestVirusScanResult) {
-            TestVirusScanResultInfo info = ((TestVirusScanResult) result).getInfo();
+        if (result.getInfo() instanceof TestVirusScanResultInfo) {
+            TestVirusScanResultInfo info = (TestVirusScanResultInfo) result.getInfo();
             basic += "\nScanned Files: " + info.getScannedFiles() + " / Malicious Files: " + info.getMaliciousFiles();
         }
         return basic;
