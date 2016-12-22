@@ -38,10 +38,20 @@ public class WebifierTest<R> implements WebifierTestResultListener {
         return id;
     }
 
+    /**
+     * returns true after the test has finished
+     *
+     * @return
+     */
     public boolean isFinished() {
         return finished;
     }
 
+    /**
+     * returns true if a result or error is available
+     *
+     * @return
+     */
     public boolean isCompleted() {
         return result != null || error != null;
     }
@@ -129,6 +139,9 @@ public class WebifierTest<R> implements WebifierTestResultListener {
     public void onTestError(String error) {
         shutdown();
         this.error = new Exception(error);
+        if (TestResult.class.isAssignableFrom(listener.getResultClass())) {
+            result = (R) TestResult.undefinedResult(this.error);
+        }
         listener.onTestError(this, this.error);
         finished = true;
     }

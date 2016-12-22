@@ -10,6 +10,7 @@
       "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-virusscan",
       "startup_timeout_seconds": 600,
       "result_class": "de.securitysquad.webifier.output.result.virusscan.TestVirusScanResultInfo",
+      "weight": 5,
       "enabled": true
     },
     {
@@ -17,6 +18,7 @@
       "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-header-inspection",
       "startup_timeout_seconds": 600,
       "result_class": "de.securitysquad.webifier.output.result.headerinspection.HeaderInspectionResultInfo",
+      "weight": 1,
       "enabled": false
     },
     {
@@ -24,6 +26,7 @@
       "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-portscan",
       "startup_timeout_seconds": 600,
       "result_class": "de.securitysquad.webifier.output.result.portscan.TestPortScanResultInfo",
+      "weight": 3,
       "enabled": true
     }
   ]

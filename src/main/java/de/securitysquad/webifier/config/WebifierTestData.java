@@ -14,6 +14,8 @@ public class WebifierTestData {
     private String shutdown;
     @JsonProperty("enabled")
     private boolean enabled;
+    @JsonProperty("weight")
+    private int weight;
     @JsonProperty("result_class")
     private String resultClass;
     @JsonProperty("startup_timeout_seconds")
@@ -42,6 +44,10 @@ public class WebifierTestData {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public int getWeight() {
+        return weight;
     }
 
     public String getResultClass() {

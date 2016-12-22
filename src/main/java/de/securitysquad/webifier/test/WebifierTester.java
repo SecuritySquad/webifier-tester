@@ -11,12 +11,16 @@ import de.securitysquad.webifier.output.result.WebifierResultType;
 
 import java.util.List;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.stream.Collectors.toList;
 
 /**
  * Created by samuel on 07.11.16.
  */
 public class WebifierTester implements WebifierTestListener<TestResult> {
+    private static final double MAX_UNDEFINED_TEST_PERCENTAGE = 0.4;
+
     private final String suitId;
     private final String url;
     private final OutputFormat output;
@@ -48,11 +52,35 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     }
 
     private WebifierResultType calculateOverallResult() {
-        // TODO calculate overall result
-        if (tests.stream().allMatch(t -> t.getResult().getResultType() == WebifierResultType.CLEAN)) {
-            return WebifierResultType.CLEAN;
+        int weightSum = tests.stream().map(WebifierTest::getData).mapToInt(WebifierTestData::getWeight).sum();
+        int undefinedTestSum = tests.stream().filter(test -> test.getResult().getResultType() == WebifierResultType.UNDEFINED)
+                .map(WebifierTest::getData).mapToInt(WebifierTestData::getWeight).sum();
+        double undefinedPercentage = (double) undefinedTestSum / (double) weightSum;
+        if (undefinedPercentage > MAX_UNDEFINED_TEST_PERCENTAGE) {
+            return WebifierResultType.UNDEFINED;
         }
-        return WebifierResultType.MALICIOUS;
+        double result = 0;
+        for (WebifierTest<TestResult> test : tests) {
+            double testWeight = (double) test.getData().getWeight() / (double) weightSum;
+            result += getTestResultValue(test.getResult().getResultType(), testWeight) * testWeight;
+        }
+        if (result >= 0.5) {
+            return WebifierResultType.MALICIOUS;
+        }
+        if (result >= 0.1) {
+            return WebifierResultType.SUSPICIOUS;
+        }
+        return WebifierResultType.CLEAN;
+    }
+
+    private double getTestResultValue(WebifierResultType type, double testWeight) {
+        if (type == WebifierResultType.CLEAN) {
+            return 0;
+        }
+        if (type == WebifierResultType.MALICIOUS) {
+            return 1;
+        }
+        return min(0.5, max(0.1, testWeight));
     }
 
     @Override
