@@ -7,6 +7,7 @@ import de.securitysquad.webifier.output.message.test.TestFinishedWithError;
 import de.securitysquad.webifier.output.message.test.TestFinishedWithResult;
 import de.securitysquad.webifier.output.message.test.TestStarted;
 import de.securitysquad.webifier.output.result.TestResult;
+import de.securitysquad.webifier.output.result.WebifierResultType;
 
 import java.util.List;
 
@@ -42,8 +43,16 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     public void onTestFinished(WebifierTest test, TestResult result) {
         output.print(new TestFinishedWithResult(suitId, test.getId(), test.getData().getName(), result));
         if (tests.stream().allMatch(WebifierTest::isCompleted)) {
-            output.print(new TesterFinished(suitId, url, tests.stream().anyMatch(t -> t.getResult().isMalicious())));
+            output.print(new TesterFinished(suitId, url, calculateOverallResult()));
         }
+    }
+
+    private WebifierResultType calculateOverallResult() {
+        // TODO calculate overall result
+        if (tests.stream().allMatch(t -> t.getResult().getResultType() == WebifierResultType.CLEAN)) {
+            return WebifierResultType.CLEAN;
+        }
+        return WebifierResultType.MALICIOUS;
     }
 
     @Override

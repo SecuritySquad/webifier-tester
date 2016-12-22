@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Created by samuel on 09.11.16.
  */
 public class TestResult {
-    @JsonProperty("malicious")
-    private boolean malicious;
+    @JsonProperty("result")
+    private WebifierResultType resultType;
 
-    public boolean isMalicious() {
-        return malicious;
+    public WebifierResultType getResultType() {
+        return resultType;
     }
 }
