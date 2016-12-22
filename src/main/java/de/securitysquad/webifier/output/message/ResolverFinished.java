@@ -8,12 +8,12 @@ import de.securitysquad.webifier.output.result.ResolverResult;
 /**
  * Created by samuel on 01.12.16.
  */
-public class ResolverFinishedWithResult extends TestMessage {
+public class ResolverFinished extends TestMessage {
     @JsonProperty
     @JacksonXmlProperty
     private final ResolverResult result;
 
-    public ResolverFinishedWithResult(String testerId, String testId, ResolverResult result) {
+    public ResolverFinished(String testerId, String testId, ResolverResult result) {
         super(testerId, testId, "resolver", "Resolver finished!");
         this.result = result;
     }

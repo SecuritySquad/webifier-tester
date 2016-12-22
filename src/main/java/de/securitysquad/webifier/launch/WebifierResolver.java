@@ -1,8 +1,7 @@
 package de.securitysquad.webifier.launch;
 
 import de.securitysquad.webifier.config.WebifierTestData;
-import de.securitysquad.webifier.output.message.ResolverFinishedWithError;
-import de.securitysquad.webifier.output.message.ResolverFinishedWithResult;
+import de.securitysquad.webifier.output.message.ResolverFinished;
 import de.securitysquad.webifier.output.message.ResolverStarted;
 import de.securitysquad.webifier.output.result.ResolverResult;
 import de.securitysquad.webifier.test.OutputFormat;
@@ -10,6 +9,8 @@ import de.securitysquad.webifier.test.WebifierTest;
 import de.securitysquad.webifier.test.WebifierTestListener;
 
 import java.io.IOException;
+
+import static de.securitysquad.webifier.output.result.ResolverResult.errorResult;
 
 /**
  * Created by samuel on 01.12.16.
@@ -39,7 +40,7 @@ public class WebifierResolver implements WebifierTestListener<ResolverResult> {
         if (result != null) {
             return result;
         }
-        return ResolverResult.errorResult(url);
+        return errorResult(url);
     }
 
     @Override
@@ -49,12 +50,12 @@ public class WebifierResolver implements WebifierTestListener<ResolverResult> {
 
     @Override
     public void onTestFinished(WebifierTest test, ResolverResult result) {
-        outputFormat.print(new ResolverFinishedWithResult(id, test.getId(), result));
+        outputFormat.print(new ResolverFinished(id, test.getId(), result));
     }
 
     @Override
-    public void onTestError(WebifierTest test, Exception exception) {
-        outputFormat.print(new ResolverFinishedWithError(id, test.getId(), exception));
+    public void onTestError(WebifierTest test, Exception exception, ResolverResult result) {
+        outputFormat.print(new ResolverFinished(id, test.getId(), errorResult(url)));
     }
 
     @Override

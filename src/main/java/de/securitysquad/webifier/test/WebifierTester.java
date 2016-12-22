@@ -3,8 +3,7 @@ package de.securitysquad.webifier.test;
 import de.securitysquad.webifier.config.WebifierTestData;
 import de.securitysquad.webifier.output.message.TesterFinished;
 import de.securitysquad.webifier.output.message.TesterStart;
-import de.securitysquad.webifier.output.message.test.TestFinishedWithError;
-import de.securitysquad.webifier.output.message.test.TestFinishedWithResult;
+import de.securitysquad.webifier.output.message.test.TestFinished;
 import de.securitysquad.webifier.output.message.test.TestStarted;
 import de.securitysquad.webifier.output.result.TestResult;
 import de.securitysquad.webifier.output.result.WebifierResultType;
@@ -44,8 +43,8 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     }
 
     @Override
-    public void onTestFinished(WebifierTest test, TestResult result) {
-        output.print(new TestFinishedWithResult(suitId, test.getId(), test.getData().getName(), result));
+    public void onTestFinished(WebifierTest<TestResult> test, TestResult result) {
+        output.print(new TestFinished(suitId, test.getId(), test.getData().getName(), result));
         if (tests.stream().allMatch(WebifierTest::isCompleted)) {
             output.print(new TesterFinished(suitId, url, calculateOverallResult()));
         }
@@ -84,8 +83,8 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     }
 
     @Override
-    public void onTestError(WebifierTest test, Exception exception) {
-        output.print(new TestFinishedWithError(suitId, test.getId(), test.getData().getName(), exception));
+    public void onTestError(WebifierTest<TestResult> test, Exception exception, TestResult result) {
+        output.print(new TestFinished(suitId, test.getId(), test.getData().getName(), result));
     }
 
     @Override

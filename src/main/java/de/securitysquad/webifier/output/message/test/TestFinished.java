@@ -9,12 +9,12 @@ import de.securitysquad.webifier.output.result.virusscan.TestVirusScanResultInfo
 /**
  * Created by samuel on 09.11.16.
  */
-public class TestFinishedWithResult extends TestMessage {
+public class TestFinished extends TestMessage {
     @JsonProperty
     @JacksonXmlProperty
     private final TestResult result;
 
-    public TestFinishedWithResult(String testerId, String testId, String testName, TestResult result) {
+    public TestFinished(String testerId, String testId, String testName, TestResult result) {
         super(testerId, testId, testName, "Test '" + testName + "' finished!");
         this.result = result;
     }

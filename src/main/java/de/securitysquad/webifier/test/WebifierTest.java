@@ -73,7 +73,7 @@ public class WebifierTest<R> implements WebifierTestResultListener {
                 listener.onTestStarted(this);
                 process.waitFor(data.getStartupTimeoutInSeconds(), TimeUnit.SECONDS);
             } catch (IOException | InterruptedException e) {
-                listener.onTestError(this, e);
+                onTestError(e);
             } finally {
                 if (process != null) {
                     process.destroy();
@@ -81,7 +81,7 @@ public class WebifierTest<R> implements WebifierTestResultListener {
                 try {
                     streamHandler.stop();
                 } catch (IOException e) {
-                    listener.onTestError(this, e);
+                    onTestError(e);
                 }
                 if (!finished) {
                     onTestError("no result received!");
@@ -101,7 +101,7 @@ public class WebifierTest<R> implements WebifierTestResultListener {
                 process = Runtime.getRuntime().exec(command);
                 process.waitFor(data.getShutdownTimeoutInSeconds(), TimeUnit.SECONDS);
             } catch (IOException | InterruptedException e) {
-                listener.onTestError(WebifierTest.this, e);
+                onTestError(e);
             } finally {
                 if (process != null) {
                     process.destroy();
@@ -121,8 +121,7 @@ public class WebifierTest<R> implements WebifierTestResultListener {
             }
             this.result = mapper.readValue(result, listener.getResultClass());
         } catch (Exception e) {
-            e.printStackTrace();
-            listener.onTestError(this, e);
+            onTestError(e);
         }
         shutdown();
         if (result != null) {
@@ -137,12 +136,16 @@ public class WebifierTest<R> implements WebifierTestResultListener {
 
     @Override
     public void onTestError(String error) {
-        shutdown();
         this.error = new Exception(error);
+        onTestError(this.error);
+    }
+
+    private void onTestError(Exception e) {
+        shutdown();
         if (TestResult.class.isAssignableFrom(listener.getResultClass())) {
             result = (R) TestResult.undefinedResult(this.error);
         }
-        listener.onTestError(this, this.error);
+        listener.onTestError(this, this.error, result);
         finished = true;
     }
 }
