@@ -19,7 +19,7 @@
       "startup_timeout_seconds": 600,
       "result_class": "de.securitysquad.webifier.output.result.headerinspection.HeaderInspectionResultInfo",
       "weight": 1,
-      "enabled": false
+      "enabled": true
     },
     {
       "name": "PortScan",
