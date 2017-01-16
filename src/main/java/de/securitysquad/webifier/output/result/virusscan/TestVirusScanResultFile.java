@@ -1,6 +1,7 @@
 package de.securitysquad.webifier.output.result.virusscan;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.securitysquad.webifier.output.result.WebifierResultType;
 
 /**
  * Created by samuel on 15.11.16.
@@ -8,14 +9,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TestVirusScanResultFile {
     @JsonProperty("name")
     private String name;
-    @JsonProperty("malicious")
-    private boolean malicious;
+    @JsonProperty("result")
+    private WebifierResultType result;
 
     public String getName() {
         return name;
     }
 
-    public boolean isMalicious() {
-        return malicious;
+    public WebifierResultType getResult() {
+        return result;
     }
 }

@@ -14,6 +14,8 @@ public class TestVirusScanResultInfo extends TestResultInfo {
     private int scannedFiles;
     @JsonProperty("malicious_files")
     private int maliciousFiles;
+    @JsonProperty("suspicious_files")
+    private int suspiciousFiles;
     @JsonProperty("files")
     private List<TestVirusScanResultFile> files;
 
@@ -27,6 +29,10 @@ public class TestVirusScanResultInfo extends TestResultInfo {
 
     public int getMaliciousFiles() {
         return maliciousFiles;
+    }
+
+    public int getSuspiciousFiles() {
+        return suspiciousFiles;
     }
 
     public List<TestVirusScanResultFile> getFiles() {

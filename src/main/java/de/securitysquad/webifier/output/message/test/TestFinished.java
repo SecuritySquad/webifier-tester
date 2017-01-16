@@ -24,7 +24,7 @@ public class TestFinished extends TestMessage {
         String basic = super.formatCmd() + " Result: \n" + getResultMessage(result.getResultType());
         if (result.getInfo() instanceof TestVirusScanResultInfo) {
             TestVirusScanResultInfo info = (TestVirusScanResultInfo) result.getInfo();
-            basic += "\nScanned Files: " + info.getScannedFiles() + " / Malicious Files: " + info.getMaliciousFiles();
+            basic += "\nScanned Files: " + info.getScannedFiles() + " / Suspicious Files: " + info.getSuspiciousFiles() + " / Malicious Files: " + info.getMaliciousFiles();
         }
         return basic;
     }
