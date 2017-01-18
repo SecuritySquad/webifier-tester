@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import de.securitysquad.webifier.test.OutputFormat;
@@ -13,8 +14,15 @@ import de.securitysquad.webifier.test.OutputFormat;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "typ")
 public class Message {
-    protected static final ObjectMapper jsonMapper = new ObjectMapper();
-    protected static final XmlMapper xmlMapper = new XmlMapper();
+    protected static final ObjectMapper jsonMapper;
+    protected static final XmlMapper xmlMapper;
+
+    static {
+        jsonMapper = new ObjectMapper();
+        jsonMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        xmlMapper = new XmlMapper();
+        xmlMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    }
 
     @JsonProperty
     @JacksonXmlProperty
