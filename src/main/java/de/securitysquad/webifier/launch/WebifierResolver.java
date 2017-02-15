@@ -55,6 +55,7 @@ public class WebifierResolver implements WebifierTestListener<ResolverResult> {
 
     @Override
     public void onTestError(WebifierTest test, Exception exception, ResolverResult result) {
+        exception.printStackTrace();
         outputFormat.print(new ResolverFinished(id, test.getId(), errorResult(url)));
     }
 

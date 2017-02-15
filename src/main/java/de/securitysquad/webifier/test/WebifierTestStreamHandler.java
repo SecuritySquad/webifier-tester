@@ -1,5 +1,7 @@
 package de.securitysquad.webifier.test;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,10 +15,7 @@ public class WebifierTestStreamHandler implements Runnable {
 
     private Thread outputThread;
     private BufferedReader outputReader;
-
-    /**
-     * the last exception being caught
-     */
+    private BufferedReader errorReader;
     private String prefix;
     private WebifierTestResultListener listener;
 
@@ -27,6 +26,7 @@ public class WebifierTestStreamHandler implements Runnable {
 
 
     public void setProcessErrorStream(InputStream is) throws IOException {
+        this.errorReader = new BufferedReader(new InputStreamReader(is));
     }
 
     public void setProcessOutputStream(InputStream is) throws IOException {
@@ -64,11 +64,22 @@ public class WebifierTestStreamHandler implements Runnable {
     public void run() {
         String line;
         try {
+            boolean resultReceived = false;
             while ((line = outputReader.readLine()) != null) {
                 if (line.startsWith(prefix)) {
                     String input = line.substring(prefix.length());
                     // TODO validate input
                     listener.onTestResult(input);
+                    resultReceived = true;
+                }
+            }
+            if (!resultReceived) {
+                StringBuilder error = new StringBuilder();
+                while ((line = errorReader.readLine()) != null) {
+                    error.append(line).append(StringUtils.LF);
+                }
+                if (error.length() > 0) {
+                    listener.onTestError(error.toString());
                 }
             }
         } catch (final Exception e) {

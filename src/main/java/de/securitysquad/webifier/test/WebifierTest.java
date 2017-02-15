@@ -25,8 +25,8 @@ public class WebifierTest<R> implements WebifierTestResultListener {
 
     public WebifierTest(String suitId, String url, WebifierTestData data, WebifierTestListener<R> listener) {
         this.id = suitId + "_" + UUID.randomUUID().toString();
-        this.url = url;
         this.data = data;
+        this.url = url;
         this.listener = listener;
     }
 
@@ -62,31 +62,32 @@ public class WebifierTest<R> implements WebifierTestResultListener {
 
     public void launch() {
         new Thread(() -> {
-            WebifierTestStreamHandler streamHandler = new WebifierTestStreamHandler(id + ": ", this);
-            Process process = null;
-            try {
-                String command = data.getStartup().replace("#URL", url).replace("#ID", id);
-                process = Runtime.getRuntime().exec(command);
-                streamHandler.setProcessOutputStream(process.getInputStream());
-                streamHandler.setProcessErrorStream(process.getErrorStream());
-                streamHandler.start();
-                listener.onTestStarted(this);
-                process.waitFor(data.getStartupTimeoutInSeconds(), TimeUnit.SECONDS);
-            } catch (IOException | InterruptedException e) {
-                onTestError(e);
-            } finally {
-                if (process != null) {
-                    process.destroy();
-                }
-                try {
-                    streamHandler.stop();
-                } catch (IOException e) {
-                    onTestError(e);
-                }
-                if (!finished) {
-                    onTestError("no result received!");
-                }
+        WebifierTestStreamHandler streamHandler = new WebifierTestStreamHandler(id + ": ", this);
+        Process process = null;
+        try {
+            String command = data.getStartup().replace("#URL", url).replace("#ID", id);
+            System.out.println(command);
+            process = Runtime.getRuntime().exec(command);
+            streamHandler.setProcessOutputStream(process.getInputStream());
+            streamHandler.setProcessErrorStream(process.getErrorStream());
+            streamHandler.start();
+            listener.onTestStarted(this);
+            process.waitFor(data.getStartupTimeoutInSeconds(), TimeUnit.SECONDS);
+        } catch (IOException | InterruptedException e) {
+            onTestError(e);
+        } finally {
+            if (process != null) {
+                process.destroy();
             }
+            try {
+                streamHandler.stop();
+            } catch (IOException e) {
+                onTestError(e);
+            }
+            if (!finished) {
+                onTestError("no result received!");
+            }
+        }
         }).start();
     }
 

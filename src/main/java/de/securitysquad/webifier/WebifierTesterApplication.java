@@ -3,7 +3,9 @@ package de.securitysquad.webifier;
 import de.securitysquad.webifier.config.WebifierConfig;
 import de.securitysquad.webifier.config.WebifierConfigLoader;
 import de.securitysquad.webifier.launch.WebifierResolver;
+import de.securitysquad.webifier.output.message.TesterFinished;
 import de.securitysquad.webifier.output.result.ResolverResult;
+import de.securitysquad.webifier.output.result.WebifierResultType;
 import de.securitysquad.webifier.test.OutputFormat;
 import de.securitysquad.webifier.test.WebifierTester;
 import org.apache.commons.cli.*;
@@ -53,13 +55,15 @@ public class WebifierTesterApplication {
             outputFormat = valueOfOrDefault(cmd.getOptionValue(OUTPUT));
         }
         String url = cmd.getOptionValue(URL);
-        WebifierConfig config = new WebifierConfigLoader().load(ClassLoader.getSystemResourceAsStream("config.json"));
+        WebifierConfig config = new WebifierConfigLoader().load("tester.json", "config.json");
         WebifierResolver resolver = new WebifierResolver(id, url, outputFormat, config.getResolver());
         resolver.launch();
         ResolverResult result = resolver.waitForResult();
-        if (result.isReachable()) {
-            new WebifierTester(id, result.getResolvedUrl(), outputFormat, config.getTests()).launch();
+        if (!result.isReachable()) {
+            outputFormat.print(new TesterFinished(id, result.getOriginalUrl(), WebifierResultType.UNDEFINED));
+            return;
         }
+        new WebifierTester(id, result.getResolvedUrl(), outputFormat, config.getTests()).launch();
     }
 
     private void printHelp(Options options) {
