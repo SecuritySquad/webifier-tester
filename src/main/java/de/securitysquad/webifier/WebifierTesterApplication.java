@@ -55,7 +55,7 @@ public class WebifierTesterApplication {
             outputFormat = valueOfOrDefault(cmd.getOptionValue(OUTPUT));
         }
         String url = cmd.getOptionValue(URL);
-        WebifierConfig config = new WebifierConfigLoader().load("tester.json", "config.json");
+        WebifierConfig config = new WebifierConfigLoader().load("config.json");
         WebifierResolver resolver = new WebifierResolver(id, url, outputFormat, config.getResolver());
         resolver.launch();
         ResolverResult result = resolver.waitForResult();
