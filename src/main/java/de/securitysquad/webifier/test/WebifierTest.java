@@ -22,6 +22,8 @@ public class WebifierTest<R> implements WebifierTestResultListener {
     private boolean finished;
     private R result;
     private Exception error;
+    private long startTimestamp;
+    private long endTimestamp;
 
     public WebifierTest(String suitId, String url, WebifierTestData data, WebifierTestListener<R> listener) {
         this.id = suitId + "_" + UUID.randomUUID().toString();
@@ -62,32 +64,35 @@ public class WebifierTest<R> implements WebifierTestResultListener {
 
     public void launch() {
         new Thread(() -> {
-        WebifierTestStreamHandler streamHandler = new WebifierTestStreamHandler(id + ": ", this);
-        Process process = null;
-        try {
-            String command = data.getStartup().replace("#URL", url).replace("#ID", id);
-            System.out.println(command);
-            process = Runtime.getRuntime().exec(command);
-            streamHandler.setProcessOutputStream(process.getInputStream());
-            streamHandler.setProcessErrorStream(process.getErrorStream());
-            streamHandler.start();
-            listener.onTestStarted(this);
-            process.waitFor(data.getStartupTimeoutInSeconds(), TimeUnit.SECONDS);
-        } catch (IOException | InterruptedException e) {
-            onTestError(e);
-        } finally {
-            if (process != null) {
-                process.destroy();
-            }
+            WebifierTestStreamHandler streamHandler = new WebifierTestStreamHandler(id + ": ", this);
+            Process process = null;
             try {
-                streamHandler.stop();
-            } catch (IOException e) {
+                String command = data.getStartup().replace("#URL", url).replace("#ID", id);
+                System.out.println(command);
+                startTimestamp = System.currentTimeMillis();
+                process = Runtime.getRuntime().exec(command);
+                streamHandler.setProcessOutputStream(process.getInputStream());
+                streamHandler.setProcessErrorStream(process.getErrorStream());
+                streamHandler.start();
+                listener.onTestStarted(this);
+                process.waitFor(data.getStartupTimeoutInSeconds(), TimeUnit.SECONDS);
+            } catch (IOException | InterruptedException e) {
                 onTestError(e);
+            } finally {
+                if (endTimestamp == 0)
+                    endTimestamp = System.currentTimeMillis();
+                if (process != null) {
+                    process.destroy();
+                }
+                try {
+                    streamHandler.stop();
+                } catch (IOException e) {
+                    onTestError(e);
+                }
+                if (!finished) {
+                    onTestError("no result received!");
+                }
             }
-            if (!finished) {
-                onTestError("no result received!");
-            }
-        }
         }).start();
     }
 
@@ -113,6 +118,8 @@ public class WebifierTest<R> implements WebifierTestResultListener {
 
     @Override
     public void onTestResult(String result) {
+        if (endTimestamp == 0)
+            endTimestamp = System.currentTimeMillis();
         ObjectMapper mapper = new ObjectMapper();
         try {
             if (TestResult.class.isAssignableFrom(listener.getResultClass())) {
@@ -142,11 +149,20 @@ public class WebifierTest<R> implements WebifierTestResultListener {
     }
 
     private void onTestError(Exception e) {
+        if (endTimestamp == 0)
+            endTimestamp = System.currentTimeMillis();
         shutdown();
         if (TestResult.class.isAssignableFrom(listener.getResultClass())) {
             result = (R) TestResult.undefinedResult(this.error);
         }
         listener.onTestError(this, this.error, result);
         finished = true;
+    }
+
+    public long getDuration() {
+        if (endTimestamp == 0 || startTimestamp == 0) {
+            return -1;
+        }
+        return endTimestamp - startTimestamp;
     }
 }

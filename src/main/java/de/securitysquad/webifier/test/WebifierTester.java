@@ -1,6 +1,9 @@
 package de.securitysquad.webifier.test;
 
 import de.securitysquad.webifier.config.WebifierTestData;
+import de.securitysquad.webifier.data.WebifierTestParameters;
+import de.securitysquad.webifier.data.WebifierTestResultData;
+import de.securitysquad.webifier.data.WebifierTesterResultData;
 import de.securitysquad.webifier.output.message.TesterFinished;
 import de.securitysquad.webifier.output.message.TesterStart;
 import de.securitysquad.webifier.output.message.test.TestFinished;
@@ -10,6 +13,7 @@ import de.securitysquad.webifier.output.result.WebifierResultType;
 
 import java.util.List;
 
+import static de.securitysquad.webifier.data.WebifierData.pushResult;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.stream.Collectors.toList;
@@ -21,18 +25,23 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     private static final double MAX_UNDEFINED_TEST_PERCENTAGE = 0.4;
 
     private final String suitId;
+    private final String originalUrl;
     private final String url;
     private final OutputFormat output;
     private final List<WebifierTest<TestResult>> tests;
+    private long startTimestamp;
 
-    public WebifierTester(String id, String url, OutputFormat output, List<WebifierTestData> testData) {
+    public WebifierTester(String id, String originalUrl, String url, OutputFormat output, List<WebifierTestData> testData) {
         this.suitId = id;
+        this.originalUrl = originalUrl;
         this.url = url;
         this.output = output;
-        this.tests = testData.stream().filter(WebifierTestData::isEnabled).map(data -> new WebifierTest<>(suitId, url, data, this)).collect(toList());
+        this.tests = testData.stream().filter(WebifierTestData::isEnabled)
+                .map(data -> new WebifierTest<>(suitId, url, data, this)).collect(toList());
     }
 
     public void launch() {
+        startTimestamp = System.currentTimeMillis();
         output.print(new TesterStart(suitId, url));
         tests.forEach(WebifierTest::launch);
     }
@@ -46,17 +55,36 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     public void onTestFinished(WebifierTest<TestResult> test, TestResult result) {
         output.print(new TestFinished(suitId, test.getId(), test.getData().getName(), result));
         if (tests.stream().allMatch(WebifierTest::isCompleted)) {
-            output.print(new TesterFinished(suitId, url, calculateOverallResult()));
+            long endTimestamp = System.currentTimeMillis();
+            WebifierOverallTestResult overallResult = calculateOverallResult();
+            output.print(new TesterFinished(suitId, url, overallResult.getResultType()));
+            if (!pushResult(collectTesterResultData(overallResult, endTimestamp - startTimestamp))) {
+                System.out.println("Failed to push result to webifier-data!");
+            }
         }
     }
 
-    private WebifierResultType calculateOverallResult() {
+    private WebifierTesterResultData collectTesterResultData(WebifierOverallTestResult result, long testerDuration) {
+        List<WebifierTestResultData> testResults = tests.stream().map(this::mapTestResultData).collect(toList());
+        return new WebifierTesterResultData(suitId, originalUrl, url, result, testerDuration, testResults);
+    }
+
+    private WebifierTestResultData mapTestResultData(WebifierTest<TestResult> test) {
+        return new WebifierTestResultData(test.getId(), mapTestParameters(test.getData()), test.getResult(), test.getDuration());
+    }
+
+    private WebifierTestParameters mapTestParameters(WebifierTestData data) {
+        return new WebifierTestParameters(data.getName(), data.getStartup(), data.getShutdown(), data.isEnabled(),
+                data.getWeight(), data.getStartupTimeoutInSeconds(), data.getShutdownTimeoutInSeconds());
+    }
+
+    private WebifierOverallTestResult calculateOverallResult() {
         int weightSum = tests.stream().map(WebifierTest::getData).mapToInt(WebifierTestData::getWeight).sum();
         int undefinedTestSum = tests.stream().filter(test -> test.getResult().getResultType() == WebifierResultType.UNDEFINED)
                 .map(WebifierTest::getData).mapToInt(WebifierTestData::getWeight).sum();
         double undefinedPercentage = (double) undefinedTestSum / (double) weightSum;
         if (undefinedPercentage > MAX_UNDEFINED_TEST_PERCENTAGE) {
-            return WebifierResultType.UNDEFINED;
+            return new WebifierOverallTestResult(WebifierResultType.UNDEFINED);
         }
         double result = 0;
         for (WebifierTest<TestResult> test : tests) {
@@ -64,12 +92,12 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
             result += getTestResultValue(test.getResult().getResultType(), testWeight) * testWeight;
         }
         if (result >= 0.5) {
-            return WebifierResultType.MALICIOUS;
+            return new WebifierOverallTestResult(WebifierResultType.MALICIOUS, result);
         }
         if (result >= 0.1) {
-            return WebifierResultType.SUSPICIOUS;
+            return new WebifierOverallTestResult(WebifierResultType.SUSPICIOUS, result);
         }
-        return WebifierResultType.CLEAN;
+        return new WebifierOverallTestResult(WebifierResultType.CLEAN, result);
     }
 
     private double getTestResultValue(WebifierResultType type, double testWeight) {

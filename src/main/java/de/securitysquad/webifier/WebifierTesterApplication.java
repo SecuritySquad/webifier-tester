@@ -63,7 +63,7 @@ public class WebifierTesterApplication {
             outputFormat.print(new TesterFinished(id, result.getOriginalUrl(), WebifierResultType.UNDEFINED));
             return;
         }
-        new WebifierTester(id, result.getResolvedUrl(), outputFormat, config.getTests()).launch();
+        new WebifierTester(id, result.getOriginalUrl(), result.getResolvedUrl(), outputFormat, config.getTests()).launch();
     }
 
     private void printHelp(Options options) {

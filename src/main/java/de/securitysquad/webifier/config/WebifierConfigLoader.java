@@ -27,9 +27,8 @@ public class WebifierConfigLoader {
     }
 
     private void copyInternal(String name) throws IOException {
-        if (configFolder.mkdirs()) {
-            copyInputStreamToFile(getInternalStream(name), new File(configFolder, name));
-        }
+        configFolder.mkdirs();
+        copyInputStreamToFile(getInternalStream(name), new File(configFolder, name));
     }
 
     private WebifierConfig loadExternal(String name) throws IOException {
@@ -47,7 +46,8 @@ public class WebifierConfigLoader {
     }
 
     private InputStream getInternalStream(String name) {
-        return ClassLoader.getSystemResourceAsStream(name);
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
+//        return ClassLoader.getSystemResourceAsStream(name);
     }
 
     private WebifierConfig load(InputStream is) throws IOException {
