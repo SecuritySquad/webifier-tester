@@ -10,8 +10,6 @@ install() {
 
 cd ..
 
-rm -rf run
-
 install webifier-resolver
 
 install webifier-test-virusscan
@@ -25,6 +23,6 @@ docker rmi $(docker images --filter "dangling=true" -q)
 cd webifier-tester
 ./gradlew :buildAll
 cd ..
-mkdir -p run
 cd run
+rm -f webifier-tester-all-*.jar
 cp ../webifier-tester/build/libs/webifier-tester-all-*.jar .
