@@ -13,16 +13,26 @@ import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
  * Created by samuel on 08.11.16.
  */
 public class WebifierConfigLoader {
+    public static final String CONFIG_FILE_NAME = "config.json";
     private File configFolder = new File(System.getProperty("user.home"), ".webifier/tester");
     private ObjectMapper mapper = new ObjectMapper();
 
-    public WebifierConfig load(String name) throws IOException {
+    public WebifierConfig load() throws IOException {
         try {
-            return loadExternal(name);
+            return loadExternal(CONFIG_FILE_NAME);
         } catch (IOException e) {
-            copyInternal(name);
+            copyInternal(CONFIG_FILE_NAME);
             System.out.println("Loading internal configuration!");
-            return loadInternal(name);
+            return loadInternal(CONFIG_FILE_NAME);
+        }
+    }
+
+    public boolean updateConfig() {
+        try {
+            copyInternal(CONFIG_FILE_NAME);
+            return true;
+        } catch (IOException e) {
+            return false;
         }
     }
 
@@ -47,7 +57,6 @@ public class WebifierConfigLoader {
 
     private InputStream getInternalStream(String name) {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
-//        return ClassLoader.getSystemResourceAsStream(name);
     }
 
     private WebifierConfig load(InputStream is) throws IOException {

@@ -149,6 +149,7 @@ public class WebifierTest<R> implements WebifierTestResultListener {
     }
 
     private void onTestError(Exception e) {
+        e.printStackTrace();
         if (endTimestamp == 0)
             endTimestamp = System.currentTimeMillis();
         shutdown();

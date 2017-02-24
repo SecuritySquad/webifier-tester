@@ -28,6 +28,14 @@
       "result_class": "de.securitysquad.webifier.output.result.portscan.TestPortScanResultInfo",
       "weight": 3,
       "enabled": true
+    },
+    {
+      "name": "LinkChecker",
+      "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-linkchecker",
+      "startup_timeout_seconds": 300,
+      "result_class": "de.securitysquad.webifier.output.result.linkchecker.TestLinkCheckerResultInfo",
+      "weight": 1,
+      "enabled": true
     }
   ]
 }

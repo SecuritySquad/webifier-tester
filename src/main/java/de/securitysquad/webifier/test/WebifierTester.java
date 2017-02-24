@@ -30,6 +30,7 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     private final OutputFormat output;
     private final List<WebifierTest<TestResult>> tests;
     private long startTimestamp;
+    private WebifierOverallTestResult overallResult;
 
     public WebifierTester(String id, String originalUrl, String url, OutputFormat output, List<WebifierTestData> testData) {
         this.suitId = id;
@@ -54,9 +55,16 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     @Override
     public void onTestFinished(WebifierTest<TestResult> test, TestResult result) {
         output.print(new TestFinished(suitId, test.getId(), test.getData().getName(), result));
+        finishTesterIfTestsComplete();
+    }
+
+    private void finishTesterIfTestsComplete() {
+        if (overallResult != null) {
+            return;
+        }
         if (tests.stream().allMatch(WebifierTest::isCompleted)) {
             long endTimestamp = System.currentTimeMillis();
-            WebifierOverallTestResult overallResult = calculateOverallResult();
+            overallResult = calculateOverallResult();
             output.print(new TesterFinished(suitId, url, overallResult.getResultType()));
             if (!pushResult(collectTesterResultData(overallResult, endTimestamp - startTimestamp))) {
                 System.out.println("Failed to push result to webifier-data!");
@@ -113,6 +121,7 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     @Override
     public void onTestError(WebifierTest<TestResult> test, Exception exception, TestResult result) {
         output.print(new TestFinished(suitId, test.getId(), test.getData().getName(), result));
+        finishTesterIfTestsComplete();
     }
 
     @Override

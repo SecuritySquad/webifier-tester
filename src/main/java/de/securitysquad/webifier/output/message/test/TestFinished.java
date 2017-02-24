@@ -38,6 +38,6 @@ public class TestFinished extends TestMessage {
             case MALICIOUS:
                 return "The given url is malicious!";
         }
-        return "The test returned an error!";
+        return "The test result is undefined. Maybe the test returned an error!";
     }
 }

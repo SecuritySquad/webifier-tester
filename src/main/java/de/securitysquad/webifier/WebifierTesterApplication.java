@@ -24,18 +24,25 @@ public class WebifierTesterApplication {
     private static final String URL = "u";
     private static final String OUTPUT = "o";
     private static final String ID = "i";
+    private static final String CONFIG = "update-config";
 
     private WebifierTesterApplication(String... args) {
         Options options = new Options();
         options.addOption(builder(HELP).longOpt("help").desc("Print this help screen.").build());
+        options.addOption(builder().longOpt(CONFIG).desc("Updates the local config files").build());
         options.addOption(builder(URL).longOpt("url").hasArg().valueSeparator().desc("The url that should be tested.").argName("URL").build());
         options.addOption(builder(OUTPUT).longOpt("output").hasArg().valueSeparator().desc("Set the format of the output. Valid formats are JSON and XML.").argName("FORMAT").build());
         options.addOption(builder(ID).longOpt("id").hasArg().valueSeparator().desc("Set the id for this test").argName("ID").build());
         try {
             CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);
+            if (cmd.hasOption(CONFIG)) {
+                updateConfig();
+            }
             if (cmd.hasOption(HELP) || !cmd.hasOption(URL)) {
-                printHelp(options);
+                if (!cmd.hasOption(CONFIG)) {
+                    printHelp(options);
+                }
                 return;
             }
             launchTester(cmd);
@@ -55,7 +62,7 @@ public class WebifierTesterApplication {
             outputFormat = valueOfOrDefault(cmd.getOptionValue(OUTPUT));
         }
         String url = cmd.getOptionValue(URL);
-        WebifierConfig config = new WebifierConfigLoader().load("config.json");
+        WebifierConfig config = new WebifierConfigLoader().load();
         WebifierResolver resolver = new WebifierResolver(id, url, outputFormat, config.getResolver());
         resolver.launch();
         ResolverResult result = resolver.waitForResult();
@@ -64,6 +71,15 @@ public class WebifierTesterApplication {
             return;
         }
         new WebifierTester(id, result.getOriginalUrl(), result.getResolvedUrl(), outputFormat, config.getTests()).launch();
+    }
+
+    private void updateConfig() {
+        boolean result = new WebifierConfigLoader().updateConfig();
+        if (result) {
+            System.out.println("Config updated successfully! You can now apply your changes.");
+        } else {
+            System.out.println("Config update returns an error! Please check permissions and try again.");
+        }
     }
 
     private void printHelp(Options options) {
