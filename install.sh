@@ -31,6 +31,8 @@ install webifier-test-portscan
 
 install webifier-test-linkchecker
 
+install webifier-test-certificatechecker
+
 docker rmi $(docker images --filter "dangling=true" -q)
 
 cd webifier-tester
