@@ -44,6 +44,14 @@
       "result_class": "de.securitysquad.webifier.output.result.certificatechecker.TestCertificateCheckerResultInfo",
       "weight": 3,
       "enabled": true
+    },
+    {
+      "name": "PhishingDetector",
+      "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-phishingdetector",
+      "startup_timeout_seconds": 300,
+      "result_class": "de.securitysquad.webifier.output.result.phishingdetector.TestPhishingDetectorResultInfo",
+      "weight": 5,
+      "enabled": true
     }
   ]
 }
