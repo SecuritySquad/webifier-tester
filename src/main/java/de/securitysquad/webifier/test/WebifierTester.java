@@ -1,5 +1,6 @@
 package de.securitysquad.webifier.test;
 
+import de.securitysquad.webifier.config.WebifierConfig;
 import de.securitysquad.webifier.config.WebifierTestData;
 import de.securitysquad.webifier.data.WebifierTestParameters;
 import de.securitysquad.webifier.data.WebifierTestResultData;
@@ -29,16 +30,18 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     private final String url;
     private final OutputFormat output;
     private final List<WebifierTest<TestResult>> tests;
+    private WebifierConfig config;
     private long startTimestamp;
     private WebifierOverallTestResult overallResult;
 
-    public WebifierTester(String id, String originalUrl, String url, OutputFormat output, List<WebifierTestData> testData) {
+    public WebifierTester(String id, String originalUrl, String url, OutputFormat output, WebifierConfig config) {
         this.suitId = id;
         this.originalUrl = originalUrl;
         this.url = url;
         this.output = output;
-        this.tests = testData.stream().filter(WebifierTestData::isEnabled)
+        this.tests = config.getTests().stream().filter(WebifierTestData::isEnabled)
                 .map(data -> new WebifierTest<>(suitId, url, data, this)).collect(toList());
+        this.config = config;
     }
 
     public void launch() {
@@ -66,8 +69,10 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
             long endTimestamp = System.currentTimeMillis();
             overallResult = calculateOverallResult();
             output.print(new TesterFinished(suitId, url, overallResult.getResultType()));
-            if (!pushResult(collectTesterResultData(overallResult, endTimestamp - startTimestamp))) {
-                System.out.println("Failed to push result to webifier-data!");
+            if (config.getPreferenceValue("push_result_data", true)) {
+                if (!pushResult(collectTesterResultData(overallResult, endTimestamp - startTimestamp))) {
+                    System.out.println("Failed to push result to webifier-data!");
+                }
             }
         }
     }

@@ -1,57 +1,74 @@
 {
   "resolver": {
     "name": "resolver",
-    "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-resolver",
-    "startup_timeout_seconds": 60
+    "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID webifier-resolver",
+    "startup_timeout_seconds": 60,
+    "shutdown": "docker stop #ID",
+    "shutdown_timeout_seconds": 30
   },
   "tests": [
     {
       "name": "VirusScan",
-      "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-virusscan",
+      "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID webifier-test-virusscan",
       "startup_timeout_seconds": 600,
+      "shutdown": "docker stop #ID",
+      "shutdown_timeout_seconds": 30,
       "result_class": "de.securitysquad.webifier.output.result.virusscan.TestVirusScanResultInfo",
       "weight": 5,
       "enabled": true
     },
     {
       "name": "HeaderInspection",
-      "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-header-inspection",
+      "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID webifier-test-header-inspection",
       "startup_timeout_seconds": 300,
+      "shutdown": "docker stop #ID",
+      "shutdown_timeout_seconds": 30,
       "result_class": "de.securitysquad.webifier.output.result.headerinspection.HeaderInspectionResultInfo",
       "weight": 1,
       "enabled": true
     },
     {
       "name": "PortScan",
-      "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-portscan",
+      "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID webifier-test-portscan",
       "startup_timeout_seconds": 300,
+      "shutdown": "docker stop #ID",
+      "shutdown_timeout_seconds": 30,
       "result_class": "de.securitysquad.webifier.output.result.portscan.TestPortScanResultInfo",
       "weight": 3,
       "enabled": true
     },
     {
       "name": "LinkChecker",
-      "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-linkchecker",
+      "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID webifier-test-linkchecker",
       "startup_timeout_seconds": 300,
+      "shutdown": "docker stop #ID",
+      "shutdown_timeout_seconds": 30,
       "result_class": "de.securitysquad.webifier.output.result.linkchecker.TestLinkCheckerResultInfo",
       "weight": 1,
       "enabled": true
     },
     {
       "name": "CertificateChecker",
-      "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-certificatechecker",
+      "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID webifier-test-certificatechecker",
       "startup_timeout_seconds": 300,
+      "shutdown": "docker stop #ID",
+      "shutdown_timeout_seconds": 30,
       "result_class": "de.securitysquad.webifier.output.result.certificatechecker.TestCertificateCheckerResultInfo",
       "weight": 3,
       "enabled": true
     },
     {
       "name": "PhishingDetector",
-      "startup": "docker run --rm -e URL=#URL -e ID=#ID webifier-test-phishingdetector",
+      "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID webifier-test-phishingdetector",
       "startup_timeout_seconds": 300,
+      "shutdown": "docker stop #ID",
+      "shutdown_timeout_seconds": 30,
       "result_class": "de.securitysquad.webifier.output.result.phishingdetector.TestPhishingDetectorResultInfo",
       "weight": 5,
       "enabled": true
     }
-  ]
+  ],
+  "preferences": {
+    "push_result_data": true
+  }
 }
