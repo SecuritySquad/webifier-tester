@@ -38,6 +38,16 @@
       "enabled": true
     },
     {
+      "name": "IpScan",
+      "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID webifier-test-ipscan",
+      "startup_timeout_seconds": 300,
+      "shutdown": "docker stop #ID",
+      "shutdown_timeout_seconds": 30,
+      "result_class": "de.securitysquad.webifier.output.result.ipscan.TestIpScanResultInfo",
+      "weight": 3,
+      "enabled": true
+    },
+    {
       "name": "LinkChecker",
       "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID webifier-test-linkchecker",
       "startup_timeout_seconds": 300,
