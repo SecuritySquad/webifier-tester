@@ -29,6 +29,8 @@ install webifier-test-header-inspection
 
 install webifier-test-portscan
 
+install webifier-test-ipscan
+
 install webifier-test-linkchecker
 
 install webifier-test-certificatechecker
