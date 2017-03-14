@@ -48,6 +48,16 @@
       "enabled": true
     },
     {
+      "name": "Screenshot",
+      "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID webifier-test-screenshot",
+      "startup_timeout_seconds": 300,
+      "shutdown": "docker stop #ID",
+      "shutdown_timeout_seconds": 30,
+      "result_class": "de.securitysquad.webifier.output.result.screenshot.TestScreenshotResultInfo",
+      "weight": 0,
+      "enabled": true
+    },
+    {
       "name": "LinkChecker",
       "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID webifier-test-linkchecker",
       "startup_timeout_seconds": 300,
