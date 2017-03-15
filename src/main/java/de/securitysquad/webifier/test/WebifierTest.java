@@ -77,8 +77,7 @@ public class WebifierTest<R> implements WebifierTestResultListener {
                 listener.onTestStarted(this);
                 process.waitFor(data.getStartupTimeoutInSeconds(), TimeUnit.SECONDS);
             } catch (IOException | InterruptedException e) {
-                if (endTimestamp == 0)
-                    onTestError(e);
+                onTestError(e);
             } finally {
                 if (endTimestamp == 0)
                     endTimestamp = System.currentTimeMillis();
@@ -151,8 +150,9 @@ public class WebifierTest<R> implements WebifierTestResultListener {
 
     private void onTestError(Exception e) {
         e.printStackTrace();
-        if (endTimestamp == 0)
-            endTimestamp = System.currentTimeMillis();
+        if (endTimestamp != 0)
+            return;
+        endTimestamp = System.currentTimeMillis();
         shutdown();
         if (TestResult.class.isAssignableFrom(listener.getResultClass())) {
             result = (R) TestResult.undefinedResult(this.error);
