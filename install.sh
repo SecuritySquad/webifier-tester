@@ -37,6 +37,8 @@ install webifier-test-certificatechecker
 
 install webifier-test-phishingdetector
 
+install webifier-test-screenshot
+
 docker rmi $(docker images --filter "dangling=true" -q)
 
 cd webifier-tester

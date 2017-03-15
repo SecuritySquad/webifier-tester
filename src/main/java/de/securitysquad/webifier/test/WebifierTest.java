@@ -77,7 +77,8 @@ public class WebifierTest<R> implements WebifierTestResultListener {
                 listener.onTestStarted(this);
                 process.waitFor(data.getStartupTimeoutInSeconds(), TimeUnit.SECONDS);
             } catch (IOException | InterruptedException e) {
-                onTestError(e);
+                if (endTimestamp == 0)
+                    onTestError(e);
             } finally {
                 if (endTimestamp == 0)
                     endTimestamp = System.currentTimeMillis();
