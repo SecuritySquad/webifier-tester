@@ -79,8 +79,12 @@ public class WebifierTest<R> implements WebifierTestResultListener {
             } catch (IOException | InterruptedException e) {
                 onTestError(e);
             } finally {
-                if (endTimestamp == 0)
+                if (!finished) {
+                    onTestError("no result received!");
+                }
+                if (endTimestamp == 0) {
                     endTimestamp = System.currentTimeMillis();
+                }
                 if (process != null) {
                     process.destroy();
                 }
@@ -89,11 +93,18 @@ public class WebifierTest<R> implements WebifierTestResultListener {
                 } catch (IOException e) {
                     onTestError(e);
                 }
-                if (!finished) {
-                    onTestError("no result received!");
-                }
             }
-        }).start();
+            shutdown();
+            if (result != null) {
+                listener.onTestFinished(WebifierTest.this, this.result);
+            } else {
+                if (TestResult.class.isAssignableFrom(listener.getResultClass())) {
+                    result = (R) TestResult.undefinedResult(this.error);
+                }
+                listener.onTestError(this, this.error, result);
+            }
+            finished = true;
+        }, data.getName() + "_" + id).start();
     }
 
     private void shutdown() {
@@ -113,7 +124,7 @@ public class WebifierTest<R> implements WebifierTestResultListener {
                     process.destroy();
                 }
             }
-        }).start();
+        }, data.getName() + "_" + id + "_SHUTDOWN").start();
     }
 
     @Override
@@ -131,11 +142,6 @@ public class WebifierTest<R> implements WebifierTestResultListener {
         } catch (Exception e) {
             onTestError(e);
         }
-        shutdown();
-        if (result != null) {
-            listener.onTestFinished(WebifierTest.this, this.result);
-        }
-        finished = true;
     }
 
     private Class<? extends TestResultInfo> getSpecificClass() throws ClassNotFoundException {
@@ -149,16 +155,11 @@ public class WebifierTest<R> implements WebifierTestResultListener {
     }
 
     private void onTestError(Exception e) {
-        e.printStackTrace();
         if (endTimestamp != 0)
             return;
         endTimestamp = System.currentTimeMillis();
-        shutdown();
-        if (TestResult.class.isAssignableFrom(listener.getResultClass())) {
-            result = (R) TestResult.undefinedResult(this.error);
-        }
-        listener.onTestError(this, this.error, result);
-        finished = true;
+        System.err.println(data.getName());
+        e.printStackTrace();
     }
 
     public long getDuration() {

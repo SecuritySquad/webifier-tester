@@ -11,8 +11,11 @@ import de.securitysquad.webifier.output.message.test.TestFinished;
 import de.securitysquad.webifier.output.message.test.TestStarted;
 import de.securitysquad.webifier.output.result.TestResult;
 import de.securitysquad.webifier.output.result.WebifierResultType;
+import de.securitysquad.webifier.output.result.phishingdetector.TestPhishingDetectorResultInfo;
+import de.securitysquad.webifier.output.result.phishingdetector.TestPhishingDetectorResultMatch;
 
 import java.util.List;
+import java.util.Objects;
 
 import static de.securitysquad.webifier.data.WebifierData.pushResult;
 import static java.lang.Math.max;
@@ -62,6 +65,8 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     }
 
     private void finishTesterIfTestsComplete() {
+        System.out.println(overallResult != null);
+        System.out.println(tests.stream().map(WebifierTest::isCompleted).collect(toList()));
         if (overallResult != null) {
             return;
         }
@@ -69,7 +74,9 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
             long endTimestamp = System.currentTimeMillis();
             overallResult = calculateOverallResult();
             output.print(new TesterFinished(suitId, url, overallResult.getResultType()));
-            if (config.getPreferenceValue("push_result_data", true)) {
+            Boolean push_result_data = config.getPreferenceValue("push_result_data", true);
+            System.out.println(push_result_data);
+            if (push_result_data) {
                 if (!pushResult(collectTesterResultData(overallResult, endTimestamp - startTimestamp))) {
                     System.out.println("Failed to push result to webifier-data!");
                 }
@@ -78,12 +85,19 @@ public class WebifierTester implements WebifierTestListener<TestResult> {
     }
 
     private WebifierTesterResultData collectTesterResultData(WebifierOverallTestResult result, long testerDuration) {
-        List<WebifierTestResultData> testResults = tests.stream().map(this::mapTestResultData).collect(toList());
+        List<WebifierTestResultData> testResults = tests.stream().map(this::mapTestResultData).filter(Objects::nonNull).collect(toList());
         return new WebifierTesterResultData(suitId, originalUrl, url, result, testerDuration, testResults);
     }
 
     private WebifierTestResultData mapTestResultData(WebifierTest<TestResult> test) {
-        return new WebifierTestResultData(test.getId(), mapTestParameters(test.getData()), test.getResult(), test.getDuration());
+        if ("Screenshot".equals(test.getData().getName())) {
+            return null;
+        }
+        TestResult result = test.getResult().clone();
+        if ("PhishingDetector".equals(test.getData().getName())) {
+            ((TestPhishingDetectorResultInfo) result.getInfo()).getMatches().forEach(TestPhishingDetectorResultMatch::removeComparison);
+        }
+        return new WebifierTestResultData(test.getId(), mapTestParameters(test.getData()), result, test.getDuration());
     }
 
     private WebifierTestParameters mapTestParameters(WebifierTestData data) {

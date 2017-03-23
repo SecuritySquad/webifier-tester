@@ -49,4 +49,8 @@ public class TestPhishingDetectorResultMatch {
     public String getComparison() {
         return comparison;
     }
+
+    public void removeComparison() {
+        comparison = null;
+    }
 }
