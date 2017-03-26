@@ -6,21 +6,31 @@ import de.securitysquad.webifier.output.result.TestResultInfo;
 import java.util.List;
 
 public class HeaderInspectionResultInfo extends TestResultInfo {
-    @JsonProperty("meanRatio")
-    private double meanRatio;
-
-    @JsonProperty("worstRatio")
+    @JsonProperty
+    private double medianRatio;
+    @JsonProperty
     private double worstRatio;
-
-    @JsonProperty("browsers")
+    @JsonProperty
+    private int medianDiff;
+    @JsonProperty
+    private int worstDiff;
+    @JsonProperty
     private List<String> browsers;
 
-    public double getMeanRatio() {
-        return meanRatio;
+    public double getMedianRatio() {
+        return medianRatio;
     }
 
     public double getWorstRatio() {
         return worstRatio;
+    }
+
+    public int getMedianDiff() {
+        return medianDiff;
+    }
+
+    public int getWorstDiff() {
+        return worstDiff;
     }
 
     public List<String> getBrowsers() {
