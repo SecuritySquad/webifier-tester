@@ -140,6 +140,7 @@ public class WebifierTest<R> implements WebifierTestResultListener {
             }
             this.result = mapper.readValue(result, listener.getResultClass());
         } catch (Exception e) {
+            e.printStackTrace();
             onTestError(e);
         }
     }

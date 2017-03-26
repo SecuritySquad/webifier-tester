@@ -39,6 +39,8 @@ install webifier-test-phishingdetector
 
 install webifier-test-screenshot
 
+install webifier-test-google-safe-browsing
+
 docker rmi $(docker images --filter "dangling=true" -q)
 
 cd webifier-tester

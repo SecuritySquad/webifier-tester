@@ -86,6 +86,16 @@
       "result_class": "de.securitysquad.webifier.output.result.phishingdetector.TestPhishingDetectorResultInfo",
       "weight": 5,
       "enabled": true
+    },
+    {
+      "name": "GoogleSafeBrowsing",
+      "startup": "docker run --rm --name #ID -e URL=#URL -e ID=#ID -e API_KEY=INSERT_API_KEY webifier-test-google-safe-browsing",
+      "startup_timeout_seconds": 300,
+      "shutdown": "docker stop #ID",
+      "shutdown_timeout_seconds": 30,
+      "result_class": "de.securitysquad.webifier.output.result.googlesafebrowsing.TestGoogleSafeBrowsingResultInfo",
+      "weight": 3,
+      "enabled": true
     }
   ],
   "preferences": {
